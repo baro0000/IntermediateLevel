@@ -15,8 +15,8 @@ namespace GameEntitiesBase.Repositories
             _dbSet = _dbContext.Set<T>();
         }
 
-        public event  EventHandler<T>? ItemAdded;
-        public event  EventHandler<T>? ItemRemoved;
+        public event EventHandler<T>? ItemAdded;
+        public event EventHandler<T>? ItemRemoved;
 
         public IEnumerable<T> GetAll()
         {
@@ -49,11 +49,18 @@ namespace GameEntitiesBase.Repositories
             int id = numToStart;
 
             var entities = GetAll();
-            if (entities != null)
+            List<int> list = new List<int>();
+
+            foreach(var entity in entities)
             {
-                foreach (var entity in entities)
+                list.Add(entity.Id);
+            }
+
+            if (list != null)
+            {
+                foreach (var num in list)
                 {
-                    if(entity.Id == id)
+                    if (list.Contains(num))
                     {
                         id++;
                     }

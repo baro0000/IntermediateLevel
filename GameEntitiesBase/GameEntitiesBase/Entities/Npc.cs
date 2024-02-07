@@ -1,17 +1,17 @@
 ﻿namespace GameEntitiesBase.Entities
 {
-    public class Npc : Player
+    public class Npc : EntityBase
     {
         public Npc()
         {
             
         }
 
-        public Npc(string name) : base(name) 
+        public Npc(string name)
         {
-            
+            Name = name;
         }
 
-        public override string ToString() => $"{base.ToString()} (NPC)";
+        public override string ToString() => $"Id: {Id} Name: {Name} (NPC)";
     }
 }
