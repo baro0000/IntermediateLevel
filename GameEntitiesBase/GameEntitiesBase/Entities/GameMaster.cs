@@ -2,7 +2,7 @@
 {
     public class GameMaster : EntityBase
     {
-        public string Name { get; set; }
+        
 
         public GameMaster()
         {

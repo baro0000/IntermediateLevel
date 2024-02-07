@@ -11,12 +11,16 @@ namespace GameEntitiesBase
     {
         private string filePath = "save.txt";
         SqlEntityRepository<Player> repository = new SqlEntityRepository<Player>(new GameEntitiesBaseDbContext());
+        List<Player> newAddedPLayers = new List<Player>();
+        List<Npc> newAddedNpcs = new List<Npc>();
+        List<GameMaster> newAddedGMs = new List<GameMaster>();
         private int currentOption;
         private string[] menuOptions = { "Show list of entities",
                                                                   "Add new entity",
                                                                   "Delete entity",
                                                                   "Find entity",
                                                                   "Quit" };
+        private delegate void PrintChosenMenu();
 
         public MenuGenerator()
         {
@@ -34,17 +38,17 @@ namespace GameEntitiesBase
                     }
                     repository.Save();
                 }
-                repository.ItemAdded += PlayerAdded;
-                repository.ItemRemoved += PlayerRemoved;
+                repository.ItemAdded += ObjectAdded;
+                repository.ItemRemoved += ObjectRemoved;
             }
         }
-        void PlayerAdded(object sender, Player player)
+        void ObjectAdded(object sender, EntityBase obj)
         {
-            Console.WriteLine($"{player.Name} added to database");
+            Console.WriteLine($"{obj.Name} added to database");
         }
-        void PlayerRemoved(object sender, Player player)
+        void ObjectRemoved(object sender, EntityBase obj)
         {
-            Console.WriteLine($"{player.Name} removed from database");
+            Console.WriteLine($"{obj.Name} removed from database");
         }
 
         private void PrintMainMenu() //wyświetla menu i podświetla aktywną opcję
@@ -55,19 +59,24 @@ namespace GameEntitiesBase
             Console.WriteLine(">>> Welcome to the game entities database <<<");
             Console.WriteLine();
 
-            for (int i = 0; i < menuOptions.Length; i++)
+            OptionsDisplay(menuOptions, currentOption);
+        }
+
+        public void OptionsDisplay(string[] givenMenuOptions, int indicator)
+        {
+            for (int i = 0; i < givenMenuOptions.Length; i++)
             {
-                if (currentOption == i)
+                if (indicator == i)
                 {
                     Console.BackgroundColor = ConsoleColor.DarkCyan;
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"{menuOptions[i],-35}");
+                    Console.WriteLine($"{givenMenuOptions[i],-35}");
                     Console.BackgroundColor = ConsoleColor.Gray;
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                 }
                 else
                 {
-                    Console.WriteLine(menuOptions[i]);
+                    Console.WriteLine(givenMenuOptions[i]);
                 }
             }
         }
@@ -79,15 +88,13 @@ namespace GameEntitiesBase
             while (true)
             {
                 PrintMainMenu();
-                ChooseOption();
+                ChooseOption(menuOptions, ref currentOption, PrintMainMenu);
                 RunChosenOption();
             }
         }
 
         private void RunChosenOption() // Główna logika wybieranych opcji
         {
-            List<Player> newAddedEntities = new List<Player>();
-            string name;
             switch (currentOption)
             {
                 case 0:   //OPCJA 1
@@ -105,12 +112,11 @@ namespace GameEntitiesBase
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadKey();
                     break;
-                case 1:   //OPCJA 2   --- przerobić na działanie generyczne
+                case 1:   //OPCJA 2  
                     Console.Clear();
                     while (true)
                     {
-                        Console.Write("Set Name: ");
-                        newAddedEntities.Add(new Player(name = Console.ReadLine()));
+                        AddNewEntity();
                         Console.Write("Do you want to add next entity? If you want to quit press N or Esc, or any key to continue");
                         ConsoleKeyInfo chosenKey = Console.ReadKey();
                         Console.WriteLine();
@@ -123,7 +129,8 @@ namespace GameEntitiesBase
                             break;
                         }
                     }
-                    repository.AddBatch(newAddedEntities);
+                    repository.AddBatch(newAddedPLayers);
+                    repository.AddBatch(newAddedNpcs);
 
                     Console.WriteLine();
                     Console.WriteLine("Press any key to continue...");
@@ -184,7 +191,7 @@ namespace GameEntitiesBase
             }
         }
 
-        private void ChooseOption() //Obsługa ruchu strzałek i przycisków
+        private void ChooseOption(string[] givenMenuOptions, ref int indicator, PrintChosenMenu printChosenMenu) //Obsługa ruchu strzałek i przycisków
         {
             do
             {
@@ -192,17 +199,17 @@ namespace GameEntitiesBase
 
                 if (chosenKey.Key == ConsoleKey.UpArrow)
                 {
-                    currentOption = (currentOption > 0) ? currentOption - 1 : menuOptions.Length - 1;
-                    PrintMainMenu();
+                    indicator = (indicator > 0) ? indicator - 1 : givenMenuOptions.Length - 1;
+                    printChosenMenu();
                 }
                 else if (chosenKey.Key == ConsoleKey.DownArrow)
                 {
-                    currentOption = (currentOption < menuOptions.Length - 1) ? currentOption + 1 : currentOption = 0;
-                    PrintMainMenu();
+                    indicator = (indicator < givenMenuOptions.Length - 1) ? indicator + 1 : indicator = 0;
+                    printChosenMenu();
                 }
                 else if (chosenKey.Key == ConsoleKey.Escape)
                 {
-                    currentOption = menuOptions.Length - 1;
+                    indicator = givenMenuOptions.Length - 1;
                     break;
                 }
                 else if (chosenKey.Key == ConsoleKey.Enter)
@@ -210,6 +217,71 @@ namespace GameEntitiesBase
                     break;
                 }
             } while (true);
+        }
+
+        private void AddNewEntity()
+        {
+            int activeOption = 0;
+            string[] entityCreatingOptions = new string[] { "Player", "Npc", "Game Master", "Return" };
+
+            PrintCreatingNewEntitiyMenu();
+            ChooseOption(entityCreatingOptions, ref activeOption, PrintCreatingNewEntitiyMenu);
+            string? name;
+            switch (activeOption)
+            {
+                case 0:
+                    Console.Clear();
+                    Console.Write("Set Name: ");
+                    name = Console.ReadLine();
+                    newAddedPLayers.Add(new Player(name) { Id = CheckAvailability()});
+                    break;
+                case 1:
+                    Console.Clear();
+                    Console.Write("Set Name: ");
+                    name = Console.ReadLine();
+                    newAddedNpcs.Add(new Npc(name) { Id = CheckAvailability() });
+                    break;
+                case 3:
+                    Console.Clear();
+                    Console.Write("Set Name: ");
+                    name = Console.ReadLine();
+                    newAddedGMs.Add(new GameMaster(name) { Id = CheckAvailability() });
+                    break;
+                case 4:
+                    break;
+            }
+            void PrintCreatingNewEntitiyMenu()
+            {
+                Console.Clear();
+                Console.WriteLine(">>> New entity creator <<<");
+                OptionsDisplay(entityCreatingOptions, activeOption);
+            }
+
+            int CheckAvailability()
+            {
+                int result = 1;
+                while (true)
+                {
+                    result = repository.GetFirstFreeId(result);
+                    foreach (var obj in newAddedPLayers)
+                    {
+                        if (obj.Id == result)
+                        {
+                            result = ++result;
+                            continue;
+                        }
+                    }
+                    foreach (var obj in newAddedNpcs)
+                    {
+                        if (obj.Id == result)
+                        {
+                            result = ++result;
+                            continue;
+                        }
+                    }
+                    return result;
+                }
+            }
         }
     }
 }
