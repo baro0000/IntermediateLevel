@@ -2,6 +2,7 @@
 using GameEntitiesBase.Entities;
 using GameEntitiesBase.Repositories;
 using GameEntitiesBase.Repositories.Extensions;
+using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Text.Json;
 
@@ -12,6 +13,7 @@ namespace GameEntitiesBase
         private string filePath = "savePlayerAndNpc.txt";
         private string filePath2 = "saveGM.txt";
         private string filePath3 = "saveNPC.txt";
+        private string filePath4 = "EventLog.txt";
 
         private SqlEntityRepository<Player> repositoryPlayer = new SqlEntityRepository<Player>(new GameEntitiesBaseDbContext());
         private SqlEntityRepository<GameMaster> repositoryGM = new SqlEntityRepository<GameMaster>(new GameEntitiesBaseDbContext());
@@ -35,8 +37,21 @@ namespace GameEntitiesBase
             repositoryPlayer.LoadFromFile(filePath);
             repositoryGM.LoadFromFile(filePath2);
             repositoryNPC.LoadFromFile(filePath3);
+
             repositoryPlayer.ItemAdded += ObjectAdded;
+            repositoryPlayer.ItemAdded += WriteToEventLogObjAdded;
             repositoryPlayer.ItemRemoved += ObjectRemoved;
+            repositoryPlayer.ItemRemoved += WriteToEventLogObjRemoved;
+
+            repositoryGM.ItemAdded += ObjectAdded;
+            repositoryGM.ItemAdded += WriteToEventLogObjAdded;
+            repositoryGM.ItemRemoved += ObjectRemoved;
+            repositoryGM.ItemRemoved += WriteToEventLogObjRemoved;
+
+            repositoryNPC.ItemAdded += ObjectAdded;
+            repositoryNPC.ItemAdded += WriteToEventLogObjAdded;
+            repositoryNPC.ItemRemoved += ObjectRemoved;
+            repositoryNPC.ItemRemoved += WriteToEventLogObjRemoved;
         }
 
         void ObjectAdded(object sender, EntityBase obj)
@@ -46,6 +61,25 @@ namespace GameEntitiesBase
         void ObjectRemoved(object sender, EntityBase obj)
         {
             Console.WriteLine($"{obj.Name} removed from database");
+        }
+        void WriteToEventLogObjAdded(object sender, EntityBase obj)
+        {
+
+            using (var writer = File.AppendText(filePath4))
+            {
+                writer.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} : ID: {obj.Id} object {obj.Name} has been added");
+            }
+
+        }
+        void WriteToEventLogObjRemoved(object sender, EntityBase obj)
+        {
+            if (File.Exists(filePath4))
+            {
+                using (var writer = File.AppendText(filePath4))
+                {
+                    writer.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} : ID: {obj.Id} object {obj.Name} has been removed");
+                }
+            }
         }
 
         private void PrintMainMenu() //wyświetla menu i podświetla aktywną opcję
@@ -96,39 +130,19 @@ namespace GameEntitiesBase
             {
                 case 0:   //Show list of entities
                     Console.Clear();
-                    var collectionPlayerAndNPC = repositoryPlayer.GetAll();
-                    var collectionGm = repositoryGM.GetAll();
-                    var collectionNpc = repositoryNPC.GetAll();
+
+                    var sortedList = PrintEntitiesFromAllBases();
+
                     Console.WriteLine("All entities: ");
                     Console.WriteLine();
 
-                    foreach (var item in collectionPlayerAndNPC)
-                    {
-                        Console.WriteLine(item);
-                    }
-                    foreach (var item in collectionGm)
-                    {
-                        Console.WriteLine(item);
-                    }
-                    foreach (var item in collectionNpc)
-                    {
-                        Console.WriteLine(item);
-                    }
-                    foreach (var item in newAddedNpcs)
-                    {
-                        Console.WriteLine(item);
-                    }
-                    foreach (var item in newAddedGMs)
-                    {
-                        Console.WriteLine(item);
-                    }
-                    foreach (var item in newAddedPlayers)
+                    foreach (var item in sortedList)
                     {
                         Console.WriteLine(item);
                     }
 
                     Console.WriteLine();
-                    Console.WriteLine("Press any key to continue...");
+                    Console.WriteLine("Press any key to return...");
                     Console.ReadKey();
                     break;
                 case 1:   //Add new entity
@@ -150,7 +164,7 @@ namespace GameEntitiesBase
                     }
 
                     Console.WriteLine();
-                    Console.WriteLine("Press any key to continue...");
+                    Console.WriteLine("Press any key to return...");
                     Console.ReadKey();
                     break;
                 case 2:    //Delete entity
@@ -158,32 +172,11 @@ namespace GameEntitiesBase
                     Console.WriteLine("Input Id of entity you want to delete");
                     var input = Console.ReadLine();
                     int.TryParse(input, out int result);
-                    var entity = repositoryPlayer.GetById(result);
-                    var entity1 = repositoryGM.GetById(result);
-                    var entity2 = repositoryGM.GetById(result);
 
-                    if (entity != null)
-                    {
-                        repositoryPlayer.Remove(entity);
-                        repositoryPlayer.Save();
-                    }
-                    else if (entity1 != null)
-                    {
-                        repositoryGM.Remove(entity1);
-                        repositoryGM.Save();
-                    }
-                    else if (entity2 != null)
-                    {
-                        repositoryGM.Remove(entity2);
-                        repositoryGM.Save();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Entity not found");
-                    }
+                    DeleteItem(result);
 
                     Console.WriteLine();
-                    Console.WriteLine("Press any key to continue...");
+                    Console.WriteLine("Press any key to return...");
                     Console.ReadKey();
                     break;
                 case 3:   //Find entity
@@ -191,22 +184,11 @@ namespace GameEntitiesBase
                     Console.WriteLine("Input Id of entity you want to display");
                     var input2 = Console.ReadLine();
                     int.TryParse(input2, out int result2);
-                    var entity3 = repositoryPlayer.GetById(result2);
-                    var entity4 = repositoryGM.GetById(result2);
-                    if (entity3 != null)
-                    {
-                        Console.WriteLine(entity3);
-                    }
-                    else if (entity4 != null)
-                    {
-                        Console.WriteLine(entity4);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Entity not found");
-                    }
+
+                    FindAndDisplay(result2);
+
                     Console.WriteLine();
-                    Console.WriteLine("Press any key to continue...");
+                    Console.WriteLine("Press any key to return...");
                     Console.ReadKey();
                     break;
                 case 4:   //Exit
@@ -219,6 +201,102 @@ namespace GameEntitiesBase
                     repositoryNPC.SaveToFile(filePath3);
                     Environment.Exit(0);
                     break;
+            }
+        }
+
+        private List<EntityBase> PrintEntitiesFromAllBases()
+        {
+            List<EntityBase> list = new List<EntityBase>();
+            list.AddRange(repositoryPlayer.GetAll());
+            list.AddRange(repositoryGM.GetAll());
+            list.AddRange(repositoryNPC.GetAll());
+            list.AddRange(newAddedNpcs);
+            list.AddRange(newAddedGMs);
+            list.AddRange(newAddedPlayers);
+
+            return list.OrderBy(obj => obj.Id).ToList(); ;
+        }
+
+        private void DeleteItem(int id)
+        {
+            var entity1 = repositoryPlayer.GetById(id);
+            var entity2 = repositoryGM.GetById(id);
+            var entity3 = repositoryNPC.GetById(id);
+            var entity4 = newAddedPlayers.SingleOrDefault(obj => obj.Id == id);
+            var entity5 = newAddedNpcs.SingleOrDefault(obj => obj.Id == id);
+            var entity6 = newAddedGMs.SingleOrDefault(obj => obj.Id == id);
+
+            if (entity1 != null)
+            {
+                repositoryPlayer.Remove(entity1);
+                repositoryPlayer.Save();
+            }
+            else if (entity2 != null)
+            {
+                repositoryGM.Remove(entity2);
+                repositoryGM.Save();
+            }
+            else if (entity3 != null)
+            {
+                repositoryNPC.Remove(entity3);
+                repositoryGM.Save();
+            }
+            else if (entity4 != null)
+            {
+                newAddedPlayers.Remove(entity4);
+                Console.WriteLine($"{entity4.Name} removed from database");
+            }
+            else if (entity5 != null)
+            {
+                newAddedNpcs.Remove(entity5);
+                Console.WriteLine($"{entity5.Name} removed from database");
+            }
+            else if (entity6 != null)
+            {
+                newAddedGMs.Remove(entity6);
+                Console.WriteLine($"{entity6.Name} removed from database");
+            }
+            else
+            {
+                Console.WriteLine("Entity not found");
+            }
+        }
+        private void FindAndDisplay(int id)
+        {
+            var entity1 = repositoryPlayer.GetById(id);
+            var entity2 = repositoryGM.GetById(id);
+            var entity3 = repositoryNPC.GetById(id);
+            var entity4 = newAddedPlayers.SingleOrDefault(obj => obj.Id == id);
+            var entity5 = newAddedNpcs.SingleOrDefault(obj => obj.Id == id);
+            var entity6 = newAddedGMs.SingleOrDefault(obj => obj.Id == id);
+
+            if (entity1 != null)
+            {
+                Console.WriteLine(entity1);
+            }
+            else if (entity2 != null)
+            {
+                Console.WriteLine(entity2);
+            }
+            else if (entity3 != null)
+            {
+                Console.WriteLine(entity3);
+            }
+            else if (entity4 != null)
+            {
+                Console.WriteLine(entity4);
+            }
+            else if (entity5 != null)
+            {
+                Console.WriteLine(entity5);
+            }
+            else if (entity6 != null)
+            {
+                Console.WriteLine(entity6);
+            }
+            else
+            {
+                Console.WriteLine("Entity not found");
             }
         }
 
@@ -279,6 +357,7 @@ namespace GameEntitiesBase
                     newAddedGMs.Add(new GameMaster(name) { Id = CheckAvailability() });
                     break;
                 case 3:
+                    MainMenu();
                     break;
             }
             void PrintCreatingNewEntitiyMenu()
@@ -290,38 +369,44 @@ namespace GameEntitiesBase
 
             int CheckAvailability()
             {
+                List<int> unavailableIds = new List<int>();
                 int result = 1;
+
+                foreach (var obj in newAddedPlayers)
+                {
+                    unavailableIds.Add(obj.Id);
+                }
+                foreach (var obj in newAddedNpcs)
+                {
+                    unavailableIds.Add(obj.Id);
+                }
+                foreach (var obj in newAddedGMs)
+                {
+                    unavailableIds.Add(obj.Id);
+                }
+                foreach (var entity in repositoryPlayer.GetAll())
+                {
+                    unavailableIds.Add(entity.Id);
+                }
+                foreach (var entity in repositoryGM.GetAll())
+                {
+                    unavailableIds.Add(entity.Id);
+                }
+                foreach (var entity in repositoryNPC.GetAll())
+                {
+                    unavailableIds.Add(entity.Id);
+                }
+
                 while (true)
                 {
-                    result = repositoryPlayer.GetFirstFreeId(result); //zweryfikować czy na pewno dobre id wyrzuca teraz po zmianie
-                    result = repositoryGM.GetFirstFreeId(result);
-                    result = repositoryNPC.GetFirstFreeId(result);
-                    foreach (var obj in newAddedPlayers)
+                    if (!unavailableIds.Contains(result))
                     {
-                        if (obj.Id == result)
-                        {
-                            result = ++result;
-                            continue;
-                        }
+                        break;
                     }
-                    foreach (var obj in newAddedNpcs)
-                    {
-                        if (obj.Id == result)
-                        {
-                            result = ++result;
-                            continue;
-                        }
-                    }
-                    foreach (var obj in newAddedGMs)
-                    {
-                        if (obj.Id == result)
-                        {
-                            result = ++result;
-                            continue;
-                        }
-                    }
-                    return result;
+                    result++;
                 }
+
+                return result;
             }
         }
     }

@@ -2,11 +2,9 @@
 {
     public class GameMaster : EntityBase
     {
-        
-
         public GameMaster()
         {
-            
+
         }
 
         public GameMaster(string name)

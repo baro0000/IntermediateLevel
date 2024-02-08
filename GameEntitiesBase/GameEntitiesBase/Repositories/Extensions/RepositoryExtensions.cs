@@ -18,19 +18,6 @@ namespace GameEntitiesBase.Repositories.Extensions
                 repository.Save();
             }
         }
-
-        //public static void AddBatch<T>(this IWriteRepository<T> repository, List<T> collection)
-        //    where T : class, IEntity, new()
-        //{
-        //    if (repository != null)
-        //    {
-        //        foreach (var item in collection)
-        //        {
-        //            repository.Add(item);
-        //        }
-        //        repository.Save();
-        //    }
-        //}
         public static void SaveToFile<T>(this IRepository<T> repository, string path) where T : class, IEntity, new()
         {
             if (File.Exists(path))

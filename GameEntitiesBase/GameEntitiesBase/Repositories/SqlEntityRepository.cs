@@ -43,31 +43,5 @@ namespace GameEntitiesBase.Repositories
         {
             _dbContext.SaveChanges();
         }
-
-        public int GetFirstFreeId(int numToStart)
-        {
-            int id = numToStart;
-
-            var entities = GetAll();
-            List<int> list = new List<int>();
-
-            foreach(var entity in entities)
-            {
-                list.Add(entity.Id);
-            }
-
-            if (list != null)
-            {
-                foreach (var num in list)
-                {
-                    if (list.Contains(num))
-                    {
-                        id++;
-                    }
-                }
-            }
-
-            return id;
-        }
     }
 }
