@@ -7,5 +7,6 @@ namespace GameEntitiesBase.Repositories
         void Add(T entity);
         void Remove(T entity);
         void Save();
+        void LoadFromFile(string path);
     }
 }

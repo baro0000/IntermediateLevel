@@ -6,5 +6,7 @@ namespace GameEntitiesBase.Repositories
     {
         T GetById(int id);
         IEnumerable<T> GetAll();
+        int Count();
+        void SaveToFile(string path);
     }
 }

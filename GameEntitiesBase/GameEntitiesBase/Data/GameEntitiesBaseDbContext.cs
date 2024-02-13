@@ -6,7 +6,6 @@ namespace GameEntitiesBase.Data
     public class GameEntitiesBaseDbContext : DbContext
     {
         public DbSet<Player> Players => Set<Player>();
-        public DbSet<GameMaster> GameMasters => Set<GameMaster>();
         public DbSet<Npc> Npcs => Set<Npc>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

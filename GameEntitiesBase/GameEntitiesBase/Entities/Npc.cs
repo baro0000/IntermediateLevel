@@ -1,17 +1,29 @@
-﻿namespace GameEntitiesBase.Entities
+﻿using System.Text;
+using static GameEntitiesBase.Entities.Available;
+
+namespace GameEntitiesBase.Entities
 {
     public class Npc : EntityBase
     {
-        public Npc()
+        
+        public Npc(int id, Gender sex, string name, Race race, Profession profession, Statistics stats, int level) : base(id, sex, name, race, profession, stats, level)
         {
-            
         }
 
-        public Npc(string name)
+        public override string ToString()
         {
-            Name = name;
-        }
+            StringBuilder sb = new StringBuilder();
 
-        public override string ToString() => $"Id: {Id} Name: {Name} (NPC)";
+            sb.AppendLine($">> NPC Id: {Id}  <<");
+            sb.AppendLine($"Name: {Name}");
+            sb.AppendLine($"Race: {Race}");
+            sb.AppendLine($"Profession: {Profession}");
+            sb.AppendLine($"Stats:");
+            sb.AppendLine($"Strength: {Stats.Strength}");
+            sb.AppendLine($"Agility: {Stats.Agility}");
+            sb.AppendLine($"HP: {Stats.CurrentHitPoints} / {Stats.TotalHitPoints}");
+
+            return sb.ToString();
+        }
     }
 }
