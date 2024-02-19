@@ -2,6 +2,6 @@
 {
     public interface IApp
     {
-        void Run();
+        void Run(bool isOfflineModeActivated);
     }
 }

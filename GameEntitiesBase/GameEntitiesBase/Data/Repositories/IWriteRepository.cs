@@ -1,6 +1,6 @@
-﻿using GameEntitiesBase.Entities;
+﻿using GameEntitiesBase.Data.Entities;
 
-namespace GameEntitiesBase.Repositories
+namespace GameEntitiesBase.Data.Repositories
 {
     public interface IWriteRepository<in T> where T : class, IEntity
     {

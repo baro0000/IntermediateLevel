@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace GameEntitiesBase.Entities
+﻿namespace GameEntitiesBase.Data.Entities
 {
     public static class Available
     {

@@ -1,12 +1,16 @@
-﻿using System.Text;
-using static GameEntitiesBase.Entities.Available;
+﻿using GameEntitiesBase.Data.Entities.Extensions;
+using System.Text;
+using static GameEntitiesBase.Data.Entities.Available;
 
-namespace GameEntitiesBase.Entities
+namespace GameEntitiesBase.Data.Entities
 {
-    public class Npc : EntityBase
+    public class Npc : EntityBase, IEntityWithStatistics
     {
-        
-        public Npc(int id, Gender sex, string name, Race race, Profession profession, Statistics stats, int level) : base(id, sex, name, race, profession, stats, level)
+        public Npc()
+        {
+
+        }
+        public Npc(Gender sex, string name, Race race, Profession profession, Statistics stats, int level) : base(sex, name, race, profession, stats, level)
         {
         }
 

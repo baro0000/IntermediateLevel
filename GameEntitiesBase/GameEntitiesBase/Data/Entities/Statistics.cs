@@ -1,14 +1,14 @@
-﻿using System.Text.Json.Serialization;
-using static GameEntitiesBase.Entities.Available;
+﻿using static GameEntitiesBase.Data.Entities.Available;
 
-namespace GameEntitiesBase.Entities
+namespace GameEntitiesBase.Data.Entities
 {
     public class Statistics
     {
+        public int Id { get; set; }
         public int TotalHitPoints { get; set; }
         public int CurrentHitPoints { get; set; }
-        public int Strength { get; set; } //max 18
-        public int Agility { get; set; } //max 18
+        public int Strength { get; set; }
+        public int Agility { get; set; }
 
         public Statistics()
         {

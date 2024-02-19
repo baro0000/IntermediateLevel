@@ -1,15 +1,19 @@
-﻿using System.Text;
-using static GameEntitiesBase.Entities.Available;
+﻿using GameEntitiesBase.Data.Entities.Extensions;
+using System.Text;
+using static GameEntitiesBase.Data.Entities.Available;
 
-namespace GameEntitiesBase.Entities
+namespace GameEntitiesBase.Data.Entities
 {
-    public class Player : EntityBase
+    public class Player : EntityBase, IEntityWithStatistics
     {
-        
-        public Player(int id, Gender sex, string name, Race race, Profession profession, Statistics stats, int level) : base(id, sex, name, race, profession, stats, level)
+        public Player()
+        {
+
+        }
+        public Player(Gender sex, string name, Race race, Profession profession, Statistics stats, int level) : base(sex, name, race, profession, stats, level)
         {
         }
-        
+
 
         public override string ToString()
         {

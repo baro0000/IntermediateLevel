@@ -1,8 +1,8 @@
-﻿using GameEntitiesBase.Entities;
-using GameEntitiesBase.Entities.Extensions;
+﻿using GameEntitiesBase.Data.Entities;
+using GameEntitiesBase.Data.Repositories;
 using System.Text.Json;
 
-namespace GameEntitiesBase.Repositories.Extensions
+namespace GameEntitiesBase.Data.Repositories.Extensions
 {
     public static class RepositoryExtensions
     {

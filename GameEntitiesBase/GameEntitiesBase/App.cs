@@ -1,12 +1,12 @@
-﻿using GameEntitiesBase.DataProvider;
-using GameEntitiesBase.Entities;
-using GameEntitiesBase.Repositories;
+﻿using GameEntitiesBase.Components.DataProvider;
+using GameEntitiesBase.Data.Entities;
+using GameEntitiesBase.Data.Repositories;
 
 namespace GameEntitiesBase
 {
     public class App : IApp
     {
-        IUserCommunication _menuGenerator;
+        IUserCommunication _userCommunication;
         IDataProvider _dataProvider;
         IRepository<Player> _playersRepository;
         IRepository<Npc> _npcRepository;
@@ -17,7 +17,7 @@ namespace GameEntitiesBase
 
         public App(IUserCommunication menu, IDataProvider dataProvider, IRepository<Player> repositoryPlayer, IRepository<Npc> repositoryNPC)
         {
-            _menuGenerator = menu;
+            _userCommunication = menu;
             _dataProvider = dataProvider;
             _playersRepository = repositoryPlayer;
             _npcRepository = repositoryNPC;
@@ -33,17 +33,23 @@ namespace GameEntitiesBase
             repositoryNPC.ItemRemoved += WriteToEventLogObjRemoved!;
         }
 
-        public void Run()
+        public void Run(bool isOfflineActivated)
         {
-            LoadEntitiesFromFiles();
 
-            if (_playersRepository.Count() == 0 && _npcRepository.Count() == 0)
+            if (_playersRepository.CountObjects() == 0 && _npcRepository.CountObjects() == 0)
             {
-                LoadEntitiesFromProvider();
+                LoadEntitiesFromFiles();
+                if (_playersRepository.CountObjects() == 0 && _npcRepository.CountObjects() == 0)
+                {
+                    LoadEntitiesFromProvider();
+                }
             }
+            _userCommunication.MainMenu(isOfflineActivated);
 
-            _menuGenerator.MainMenu();
-
+            if (isOfflineActivated)
+            {
+                Environment.Exit(0);
+            }
             SaveRepositoriesToFiles();
         }
 
@@ -59,12 +65,10 @@ namespace GameEntitiesBase
 
         private void WriteToEventLogObjAdded(object sender, EntityBase obj)
         {
-
             using (var writer = File.AppendText(fileEventLog))
             {
                 writer.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} : ID: {obj.Id} object {obj.Name} has been added");
             }
-
         }
 
         private void WriteToEventLogObjRemoved(object sender, EntityBase obj)
@@ -82,12 +86,32 @@ namespace GameEntitiesBase
         {
             foreach (var player in _dataProvider.ProvidePlayers())
             {
-                _playersRepository.Add(player);
+                _playersRepository.Add(new Player()
+                {
+                    Id = player.Id,
+                    Sex = player.Sex,
+                    Name = player.Name,
+                    Race = player.Race,
+                    Profession = player.Profession,
+                    Stats = player.Stats,
+                    Level = player.Level
+                });
             }
             foreach (var npc in _dataProvider.ProvideNpcs())
             {
-                _npcRepository.Add(npc);
+                _npcRepository.Add(new Npc()
+                {
+                    Id = npc.Id,
+                    Sex = npc.Sex,
+                    Name = npc.Name,
+                    Race = npc.Race,
+                    Profession = npc.Profession,
+                    Stats = npc.Stats,
+                    Level = npc.Level
+                });
             }
+            _playersRepository.Save();
+            _npcRepository.Save();
         }
 
         private void LoadEntitiesFromFiles()

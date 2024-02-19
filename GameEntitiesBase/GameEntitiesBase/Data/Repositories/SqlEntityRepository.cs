@@ -1,18 +1,19 @@
-﻿
-using GameEntitiesBase.Entities;
+﻿using GameEntitiesBase.Data.Entities;
+using GameEntitiesBase.Data.Entities.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
-namespace GameEntitiesBase.Repositories
+namespace GameEntitiesBase.Data.Repositories
 {
-    public class SqlEntityRepository<T> : IRepository<T> where T : class, IEntity
+    public class SqlEntityRepository<T> : IRepository<T> where T : class, IEntity, IEntityWithStatistics, new()
     {
-        private readonly DbContext _dbContext;
+        private readonly GameEntitiesBaseDbContext _dbContext;
         private readonly DbSet<T> _dbSet;
 
-        public SqlEntityRepository(DbContext dbContext)
+        public SqlEntityRepository(GameEntitiesBaseDbContext dbContext)
         {
             _dbContext = dbContext;
+            _dbContext.Database.EnsureCreated();
             _dbSet = _dbContext.Set<T>();
         }
 
@@ -21,7 +22,7 @@ namespace GameEntitiesBase.Repositories
 
         public IEnumerable<T> GetAll()
         {
-            return _dbSet.ToList();
+            return _dbSet.Include(p => p.Stats).ToList();
         }
         public void SaveToFile(string path)
         {
@@ -58,7 +59,7 @@ namespace GameEntitiesBase.Repositories
         {
             return _dbSet.Find(id);
         }
-        public int Count()
+        public int CountObjects()
         {
             return _dbSet.Count();
         }

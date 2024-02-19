@@ -1,6 +1,6 @@
-﻿using static GameEntitiesBase.Entities.Available;
+﻿using static GameEntitiesBase.Data.Entities.Available;
 
-namespace GameEntitiesBase.Entities
+namespace GameEntitiesBase.Data.Entities
 {
     public interface IEntity
     {
@@ -10,7 +10,6 @@ namespace GameEntitiesBase.Entities
         int Level { get; set; }
         Race Race { get; }
         Profession Profession { get; }
-        Statistics Stats { get; }
 
 
         int Atack();
