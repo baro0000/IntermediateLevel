@@ -1,6 +1,8 @@
 ﻿using GameEntitiesBase.Components.DataProvider;
 using GameEntitiesBase.Data.Entities;
 using GameEntitiesBase.Data.Repositories;
+using System.Numerics;
+using System;
 
 namespace GameEntitiesBase
 {
@@ -35,22 +37,53 @@ namespace GameEntitiesBase
 
         public void Run(bool isOfflineActivated)
         {
-
-            if (_playersRepository.CountObjects() == 0 && _npcRepository.CountObjects() == 0)
+            Console.Clear();
+            Random _random = new Random();
+            Npc npc = new Npc() { Name = "Adam"};
+            Player player = new Player() { Name = "Challenger"};
+            Console.WriteLine(">>> Welcome to Arena <<<");
+            Console.WriteLine();
+            Thread.Sleep(1000);
+            Console.WriteLine("Drawing the starting player");
+            Thread.Sleep(1000);
+            Console.WriteLine("Press any key to toss k20");
+            Console.ReadLine();
+            var playerScore = _random.Next(1, 20);
+            Console.WriteLine($"Your score is: {playerScore}");
+            Console.WriteLine();
+            Console.WriteLine($"Opponent {npc.Name} tossing dice...");
+            var npcScore = _random.Next(1, 20);
+            Thread.Sleep(1000);
+            Console.WriteLine($"Opponent score: {npcScore}");
+            var whoStart = (playerScore > npcScore) ? $"{player.Name} starts battle" : $"{npc.Name} starts battle";
+            Thread.Sleep(1000);
+            Console.WriteLine(whoStart);
+            Thread.Sleep(1000);
+            Console.WriteLine("Press any key to begin...");
+            Console.ReadLine();
+            for (int i = 5; i > 0; i--)
             {
-                LoadEntitiesFromFiles();
-                if (_playersRepository.CountObjects() == 0 && _npcRepository.CountObjects() == 0)
-                {
-                    LoadEntitiesFromProvider();
-                }
+                Console.Clear();
+                Console.Write("BATTLE BEGINS IN: ");
+                Console.WriteLine(i);
+                Thread.Sleep(1000);
             }
-            _userCommunication.MainMenu(isOfflineActivated);
 
-            if (isOfflineActivated)
-            {
-                Environment.Exit(0);
-            }
-            SaveRepositoriesToFiles();
+            //if (_playersRepository.CountObjects() == 0 && _npcRepository.CountObjects() == 0)
+            //{
+            //    LoadEntitiesFromFiles();
+            //    if (_playersRepository.CountObjects() == 0 && _npcRepository.CountObjects() == 0)
+            //    {
+            //        LoadEntitiesFromProvider();
+            //    }
+            //}
+            //_userCommunication.MainMenu(isOfflineActivated);
+
+            //if (isOfflineActivated)
+            //{
+            //    Environment.Exit(0);
+            //}
+            //SaveRepositoriesToFiles();
         }
 
         private void ObjectAdded(object sender, EntityBase obj)
