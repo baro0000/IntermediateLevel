@@ -1,9 +1,13 @@
-﻿using static GameEntitiesBase.Data.Entities.Available;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using static GameEntitiesBase.Data.Entities.Available;
 
 namespace GameEntitiesBase.Data.Entities
 {
     public abstract class EntityBase : IEntity
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public Gender Sex { get; set; }
         public string Name { get; set; }
@@ -12,8 +16,7 @@ namespace GameEntitiesBase.Data.Entities
         public int StatisticsId { get; set; }
         public Statistics Stats { get; set; }
         public int Level { get; set; }
-        private int initialDamage = 8;
-        private int initialDefence = 10;
+        private int initialDamage = 6;
 
         public EntityBase()
         {
@@ -34,16 +37,12 @@ namespace GameEntitiesBase.Data.Entities
 
             return initialDamage + professionBonus;
         }
-        public virtual int Defend()
-        {
-            var professionBonus = CalculateProfessionBonusForDefence();
-
-            return initialDefence + professionBonus;
-        }
         public virtual void TakeDamage(int damageValue)
         {
             Stats.CurrentHitPoints -= damageValue;
         }
+
+        public abstract TargetArea ChooseArea();
 
         public virtual void HealAllWounds()
         {

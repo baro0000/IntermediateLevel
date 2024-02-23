@@ -14,6 +14,45 @@ namespace GameEntitiesBase.Data.Entities
         {
         }
 
+        public override TargetArea ChooseArea()
+        {
+            int userInput;
+            while (true)
+            {
+                Console.WriteLine("Choose area:");
+                Console.WriteLine("1. High");
+                Console.WriteLine("2. Middle");
+                Console.WriteLine("3. Low");
+
+                while (true)
+                {
+                    Console.Write("Your choice: ");
+                    bool isInputCorrect = int.TryParse(Console.ReadLine(), out userInput);
+                    Console.WriteLine();
+                    userInput--;
+                    if (isInputCorrect && userInput >= 0 && userInput <= 2)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong input. Please enter correct number");
+                    }
+                }
+
+                switch (userInput)
+                {
+                    case 0:
+                        return TargetArea.High;
+                    case 1:
+                        return TargetArea.Middle;
+                    case 2:
+                        return TargetArea.Low;
+                    default:
+                        throw new Exception("Couldn't return value");
+                }
+            }
+        }
 
         public override string ToString()
         {

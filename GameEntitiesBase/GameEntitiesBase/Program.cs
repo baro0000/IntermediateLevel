@@ -1,4 +1,5 @@
 ﻿using GameEntitiesBase;
+using GameEntitiesBase._2_ApplicationServices;
 using GameEntitiesBase.Components.DataProvider;
 using GameEntitiesBase.Data;
 using GameEntitiesBase.Data.Entities;
@@ -6,12 +7,13 @@ using GameEntitiesBase.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-var connectionString = "Data Source=DESKTOP-CBK7MCF\\SQLEXPRESS;Initial Catalog=GameEntityBase;Integrated Security=True;Encrypt=True;Trust Server Certificate=True";
+var connectionString = "Data Source=DESKTOP-CBK7MCF\\SQLEXPRESS;Initial Catalog=TestStorage;Integrated Security=True;Encrypt=True;Trust Server Certificate=True";
 bool offlineMode = false;
 var services = new ServiceCollection();
 services.AddSingleton<IUserCommunication, UserCommunication>();
 services.AddSingleton<IApp, App>();
 services.AddSingleton<IDataProvider, DataProvider>();
+services.AddSingleton<IFightMenager, FightMenager>();
 
 var dbContextOptionsBuilder = new DbContextOptionsBuilder<GameEntitiesBaseDbContext>();
 dbContextOptionsBuilder.UseSqlServer(connectionString);

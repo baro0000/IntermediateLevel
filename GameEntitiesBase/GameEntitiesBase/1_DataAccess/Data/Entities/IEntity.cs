@@ -13,7 +13,6 @@ namespace GameEntitiesBase.Data.Entities
 
 
         int Atack();
-        int Defend();
         void TakeDamage(int damageValue);
     }
 }

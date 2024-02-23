@@ -1,9 +1,14 @@
-﻿using static GameEntitiesBase.Data.Entities.Available;
+﻿using GameEntitiesBase.Data.Entities.Extensions;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using static GameEntitiesBase.Data.Entities.Available;
 
 namespace GameEntitiesBase.Data.Entities
 {
     public class Statistics
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int TotalHitPoints { get; set; }
         public int CurrentHitPoints { get; set; }
@@ -44,6 +49,16 @@ namespace GameEntitiesBase.Data.Entities
             }
 
             TotalHitPoints = basicHP;
+        }
+
+        public int CalculateStrengthBonus()
+        {
+            return (Strength - 10) / 2;
+        }
+
+        public int CalculateAgilityBonus()
+        {
+            return (Agility - 10) / 2;
         }
     }
 }

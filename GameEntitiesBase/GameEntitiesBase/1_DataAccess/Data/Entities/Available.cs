@@ -18,5 +18,12 @@
             Male,
             Female
         }
+
+        public enum TargetArea
+        {
+            High,
+            Middle,
+            Low
+        }
     }
 }

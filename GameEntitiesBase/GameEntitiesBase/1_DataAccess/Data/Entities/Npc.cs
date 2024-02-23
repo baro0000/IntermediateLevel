@@ -14,6 +14,24 @@ namespace GameEntitiesBase.Data.Entities
         {
         }
 
+        public override TargetArea ChooseArea()
+        {
+            Random random = new Random();
+            var strikeOption = random.Next(0, 3);
+
+            switch (strikeOption)
+            {
+                case 0:
+                    return TargetArea.High;
+                case 1:
+                    return TargetArea.Middle;
+                case 2:
+                    return TargetArea.Low;
+                default:
+                    throw new Exception("Couldn't return value");
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

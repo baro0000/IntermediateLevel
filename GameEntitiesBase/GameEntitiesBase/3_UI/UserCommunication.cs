@@ -1,4 +1,5 @@
-﻿using GameEntitiesBase.Components.DataProvider;
+﻿using GameEntitiesBase._2_ApplicationServices;
+using GameEntitiesBase.Components.DataProvider;
 using GameEntitiesBase.Data.Entities;
 using GameEntitiesBase.Data.Repositories;
 using GameEntitiesBase.Data.Repositories.Extensions;
@@ -19,17 +20,20 @@ namespace GameEntitiesBase
                                                                   "Add new entity",
                                                                   "Delete entity",
                                                                   "Find entity",
+                                                                  "Battle",
                                                                   "Quit" };
         private delegate void PrintChosenMenu();
         private IDataProvider _dataProvider;
+        private IFightMenager _fightMenager;
         bool _offlineMode;
 
-        public UserCommunication(IRepository<Player> repositoryPlayer, IRepository<Npc> repositoryNPC, IDataProvider dataProvider)
+        public UserCommunication(IRepository<Player> repositoryPlayer, IRepository<Npc> repositoryNPC, IDataProvider dataProvider, IFightMenager fightMenager)
         {
             currentOption = 0;
             _dataProvider = dataProvider;
             _repositoryPlayers = repositoryPlayer;
             _repositoryNpcs = repositoryNPC;
+            _fightMenager = fightMenager;
         }
 
         private void PrintMainMenu()
@@ -120,11 +124,63 @@ namespace GameEntitiesBase
                     FindAndDisplay();
                     break;
                 case 4:
+                    RunBattle();
+                    break;
+                case 5:
                     _repositoryPlayers.AddBatch(newAddedPlayers);
                     _repositoryNpcs.AddBatch(newAddedNpcs);
                     exitMainMenu = 1;
                     break;
             }
+        }
+
+        private void RunBattle()
+        {
+            Console.Clear();
+
+            var listPlayers = GetPlayersFromBases();
+            var listNpc = GetNpcsFromBases();
+            Player player = default;
+            Npc npc = default;
+
+            do
+            {
+                Console.WriteLine("Input Id of player:");
+                var input = Console.ReadLine();
+                int.TryParse(input, out int id);
+                player = listPlayers.SingleOrDefault(x => x.Id == id);
+                if(player == null)
+                {
+                    Console.WriteLine("Player not found!");
+                }
+            } while (player == null);
+
+            Console.Clear();
+            Console.WriteLine(player);
+            Console.WriteLine();
+
+            do
+            {
+                Console.WriteLine("Input Id of npc:");
+                var input = Console.ReadLine();
+                int.TryParse(input, out int id);
+                npc = listNpc.SingleOrDefault(x => x.Id == id);
+                if (npc == null)
+                {
+                    Console.WriteLine("Npc not found!");
+                }
+            } while (player == null);
+
+            Console.Clear();
+            Console.WriteLine(player);
+            Console.WriteLine();
+            Console.WriteLine(npc);
+            Console.WriteLine();
+
+            Console.WriteLine("Pres any key to continue");
+            Console.ReadKey();
+
+            _fightMenager.Run_PlayerVsNpc(player, npc);
         }
 
         private void DisplayEntitiesMenu()
@@ -301,7 +357,7 @@ namespace GameEntitiesBase
             int TakeIdFromUser()
             {
                 Console.Clear();
-                Console.WriteLine("Input Id of entity you want to delete");
+                Console.WriteLine("Input Id of entity you want to display");
                 var input = Console.ReadLine();
                 int.TryParse(input, out int id);
                 return id;
