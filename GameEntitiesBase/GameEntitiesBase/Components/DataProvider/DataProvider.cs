@@ -197,9 +197,9 @@ namespace GameEntitiesBase.Components.DataProvider
             Gender gender = Gender.Male;
             List<Npc> list = new()
             {
-                new Npc(gender, "Noob", Race.Human, Profession.Knight, new Statistics(15, 12, Race.Human), 1),
+                new Npc(gender, "Noob", Race.Human, Profession.Knight, new Statistics(18, 14, Race.Human), 1),
                 new Npc(gender, "Noobier", Race.Dwarf, Profession.Knight, new Statistics(14, 14, Race.Dwarf), 2),
-                new Npc(gender, "The Noobiest", Race.Elf, Profession.Barbarian, new Statistics(17, 14, Race.Elf), 3),
+                new Npc(gender, "The Noobiest", Race.Elf, Profession.Barbarian, new Statistics(10, 10, Race.Elf), 3),
             };
             return list;
         }

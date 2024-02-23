@@ -106,7 +106,7 @@
             "With a deft maneuver, you sidestep the incoming attack, avoiding injury."
         };
 
-        private static List<string> npcEvadingDescriptions = new List<string> ()
+        private static List<string> npcEvadingDescriptions = new List<string>()
         {
             "The NPC quickly steps back, narrowly avoiding the incoming blow.",
             "With a sudden retreat, the NPC manages to evade the attack at the last moment.",
@@ -125,7 +125,7 @@
             "Reacting swiftly, the NPC evades the strike, stepping back to safety."
         };
 
-        private static List<string> playerFinisherDescriptions = new List<string> ()
+        private static List<string> playerFinisherDescriptions = new List<string>()
         {
             "With a mighty swing, you cleave through the NPC's defenses, delivering a fatal blow.",
             "Channeling your inner strength, you unleash a devastating strike, ending the NPC's life.",
@@ -180,12 +180,9 @@
         }
 
         public static string AttackParriedByPlayer() => GetRandomComunicate(attackParriedByPlayerDescription);
-
         public static string AttackParriedByNpc() => GetRandomComunicate(attackParriedByNpcDescription);
-
         public static string PlayerTakeDamage() => GetRandomComunicate(playerDamageDescriptions);
         public static string NpcTakeDamage() => GetRandomComunicate(npcDamageDescriptions);
-
         public static string AttackDodgedByPlayer() => GetRandomComunicate(playerDodgingDescriptions);
         public static string AttackDodgedByNpc() => GetRandomComunicate(npcEvadingDescriptions);
         public static string PerformFinisherByPlayer() => GetRandomComunicate(playerFinisherDescriptions);

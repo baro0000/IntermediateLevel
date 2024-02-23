@@ -42,7 +42,7 @@ namespace GameEntitiesBase
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine(">>> Welcome to the game entities database <<<");
-            if(_offlineMode)
+            if (_offlineMode)
             {
                 Console.WriteLine("---! OFFLINE MODE !---");
             }
@@ -149,7 +149,7 @@ namespace GameEntitiesBase
                 var input = Console.ReadLine();
                 int.TryParse(input, out int id);
                 player = listPlayers.SingleOrDefault(x => x.Id == id);
-                if(player == null)
+                if (player == null)
                 {
                     Console.WriteLine("Player not found!");
                 }

@@ -61,18 +61,5 @@ namespace GameEntitiesBase.Data.Entities
                     return 3;
             }
         }
-
-        protected virtual int CalculateProfessionBonusForDefence()
-        {
-            switch (Profession)
-            {
-                case Profession.Knight:
-                    return 4;
-                case Profession.Barbarian:
-                    return 3;
-                default:
-                    return 3;
-            }
-        }
     }
 }

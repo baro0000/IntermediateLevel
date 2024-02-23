@@ -1,5 +1,4 @@
-﻿using GameEntitiesBase.Data.Entities.Extensions;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using static GameEntitiesBase.Data.Entities.Available;
 
@@ -53,12 +52,12 @@ namespace GameEntitiesBase.Data.Entities
 
         public int CalculateStrengthBonus()
         {
-            return (Strength - 10) / 2;
+            return (Strength > 10) ? (Strength - 10) / 2 : 0;
         }
 
         public int CalculateAgilityBonus()
         {
-            return (Agility - 10) / 2;
+            return (Agility > 0) ? (Agility - 10) / 2 : 0;
         }
     }
 }
